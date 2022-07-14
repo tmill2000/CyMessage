@@ -1,0 +1,3 @@
+To look at frontend javadocs, simply open any of the html files. index.html takes you to the packages
+
+Blake generated the javadocs but Blake and Jack each left multiple comments for different methods

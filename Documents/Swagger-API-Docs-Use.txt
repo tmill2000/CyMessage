@@ -1,0 +1,8 @@
+Swagger Docs
+
+To view swagger-docs append swagger-ui/ to the end of the root app.
+either http://localhost:8080/swagger-ui/ or http://coms-309-055.cs.iastate.edu:8080/swagger-ui/
+
+For JavaDocs:
+Our javadocs were made for our backend services. You can open the html files with service in them in the browser.
+The other files have javadocs as well, but the services are the main ones with details since controllers have swagger docs.

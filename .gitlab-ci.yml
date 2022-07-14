@@ -1,0 +1,82 @@
+stages:
+  - start-docker
+  - mavenbuild
+  - maventest
+  - android-build
+  - android-test
+  - autodeploy
+
+start-docker: #to make sure docker hasn't been shut down by the server
+  stage: start-docker
+  tags:
+    - backend_springboot_runner
+  script:
+    - sudo systemctl start docker
+
+
+maven-build:   #this is a JOB
+  stage: mavenbuild
+  tags:
+    - backend_springboot_runner  # this is LINK to the shell runner on the remote-server 
+  script:
+    - cd Backend/backend_api
+    - mvn package -B
+
+maven-test:
+  stage: maventest
+  tags:
+  - backend_springboot_runner
+  script:
+  - cd Backend/backend_api
+  - mvn test  
+  artifacts:
+    paths:
+    - Backend/backend_api/target/*.jar
+
+android-build:
+  image: javiersantos/android-ci:latest
+  stage: android-build
+  before_script:
+    - export GRADLE_USER_HOME=`pwd`/.gradle
+    - chmod +x ./Frontend/LoginScreen/gradlew
+  tags:
+    - android-runner
+  script:
+    - cd Frontend/LoginScreen
+    - ./gradlew build
+  artifacts:
+    paths:
+      - Android_test/app/build/outputs/
+
+android-test:
+  image: javiersantos/android-ci:latest
+  stage: android-test
+  before_script:
+    - export GRADLE_USER_HOME=`pwd`/.gradle
+    - chmod +x ./Frontend/LoginScreen/gradlew
+  tags:
+   - android-runner
+  script:
+    - cd Frontend/LoginScreen
+    - ./gradlew test
+
+
+autoDeploy:
+  stage: autodeploy
+  tags:
+  - backend_springboot_runner
+  only:
+    refs:
+    - main
+  script:
+  - cd Backend/backend_api
+  - mvn package
+  - sudo mv target/*.jar /target/web-demo.jar
+  - sudo systemctl stop system-web-demo
+  - sudo systemctl start system-web-demo
+
+
+
+
+
+
